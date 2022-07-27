@@ -1,90 +1,78 @@
-#include<stdio.h>
+#include<windows.h>
 #include<GL/glut.h>
-float x1,x2,x3,x4,Y1,y2,y3,y4;
+#include<stdio.h>
+#include<stdlib.h>
 
-void edgedetect(float x1,float Y1,float x2,float y2,int *le,int *re)
+GLfloat T=0;
+void MyInit()
 {
-	float x,temp;
-	int y;
-	if((y2-Y1)<0)
-	{
-		temp=Y1;Y1=y2;y2=temp;
-		temp=x1;x1=x2,x2=temp;
-	}
-	
-	for(y=Y1;y<=y2;y++)
-	{
-		x=x1+((y-Y1)*(x2-x1)/(y2-Y1));
-		
-		if(x<le[y])
-		le[y]=x;
-		
-		if(x>re[y])
-		re[y]=x;
-	}
+  glEnable(GL_DEPTH_TEST);
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glFrustum(-1,1,-1,1,2,10);
+  glMatrixMode(GL_MODELVIEW);
+  glEnable(GL_LIGHTING);
+  glEnable(GL_LIGHT0);
 }
+  void Spin()
+ {
+   T=T+1;
+   if(T>360)
+    T=0;
+   glutPostRedisplay();
+ }
 
-void scanfill(float x1,float Y1,float x2,float y2,float x3,float y3,float x4,float y4)
+   void Draw()
 {
-	int le[500],re[500];
-	int i,y;
-	for(i=0;i<500;i++)
-	{
-		le[i]=500;
-		re[i]=0;
- 	}
- 		edgedetect(x1,Y1,x2,y2,le,re);
-		edgedetect(x2,y2,x3,y3,le,re);
- 		edgedetect(x3,y3,x4,y4,le,re);
- 		edgedetect(x4,y4,x1,Y1,le,re);
- 	for(y=0;y<500;y++)
- 	{
-  		if(le[y]<=re[y])
-  		{
-  			for(i=le[y];i<re[y];i++)
-   				{
-    					glColor3f(1.0,0.0,0.0);
-    					glBegin(GL_POINTS);
-    					glVertex2i(i,y);
-    					glEnd();
-   				}
-  		}
- 	}
+  GLfloat pos[]={0,1,0,1};
+  GLfloat col[]={0,0,1,1};
+  glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+  glLoadIdentity();
+  glLightfv(GL_LIGHT0,GL_POSITION,pos);
+  glLightfv(GL_LIGHT0,GL_DIFFUSE,col);
+
+ gluLookAt(0,1,3,0,0,0,0,1,0);
+   glRotatef(T,0,1,0);
+ glPushMatrix();
+   glScalef(1,0.05,1);
+  glutSolidCube(1);
+  glPopMatrix();
+  glPushMatrix();
+  glTranslatef(-0.5,-0.5,-0.5);
+  glScalef(0.05,1,0.05);
+  glutSolidCube(1);
+  glPopMatrix();
+  glPushMatrix();
+ glTranslatef(-0.5,-0.5,0.5);
+ glScalef(0.05,1,0.05);
+ glutSolidCube(1);
+ glPopMatrix();
+ glPushMatrix();
+ glTranslatef(0.5,-0.5,-0.5);
+ glScalef(0.05,1,0.05);
+ glutSolidCube(1);
+ glPopMatrix();
+ glPushMatrix();
+ glTranslatef(0.5,-0.5,0.5);
+ glScalef(0.05,1,0.05);
+ glutSolidCube(1);
+ glPopMatrix();
+ glPushMatrix();
+ glTranslatef(0,0.25,0);
+ glutSolidTeapot(0.3);
+ glPopMatrix();
+ glutSwapBuffers();
 }
-
-void display()
+ int main(int argc,char*argv[])
 {
- 	glClear(GL_COLOR_BUFFER_BIT);
- 	glColor3f(1.0,0.0,0.0);
- 	glBegin(GL_LINE_LOOP);
- 	glVertex2f(x1,Y1);
- 	glVertex2f(x2,y2);
- 	glVertex2f(x3,y3);
- 	glVertex2f(x4,y4);
- 	glEnd();
- 	scanfill(x1,Y1,x2,y2,x3,y3,x4,y4);
- 	glFlush();
-}
-
-void myInit()
-{
- 	glClearColor(1.0,1.0,1.0,1.0);
- 	glPointSize(1.0);
- 	glMatrixMode(GL_PROJECTION);
- 	glLoadIdentity();
- 	gluOrtho2D(0.0,499.0,0.0,499.0);
-}
-
-void main(int argc,char **argv)
-{
-	printf("\n Enter the 4 vertices:");
-	scanf("%f%f%f%f%f%f%f%f",&x1,&Y1,&x2,&y2,&x3,&y3,&x4,&y4);
-	glutInit(&argc,argv);
-	glutInitDisplayMode(GLUT_SINGLE|GLUT_RGB);
-	glutInitWindowSize(500,500);
-	glutInitWindowPosition(0,0);
-	glutCreateWindow("Scan Line Area Filling Algorithm");
-	glutDisplayFunc(display);
-	myInit();
-	glutMainLoop();
+  glutInit(&argc,argv);
+  glutInitWindowSize(600,600);
+  glutInitWindowPosition(100,100);
+  glutInitDisplayMode(GLUT_RGB|GLUT_DOUBLE|GLUT_DEPTH);
+  glutCreateWindow("GLUT Sgapes");
+  MyInit();
+    glutDisplayFunc(Draw);
+   glutIdleFunc(Spin);
+    glutMainLoop();
+    return 0;
 }
