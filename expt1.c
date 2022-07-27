@@ -20,8 +20,8 @@ void draw_line(int x1,int x2,int Y1,int y2)
 	int dx,dy,i,e;
 	int incx,incy,inc1,inc2;
 	int x,y;
-	dx=x2,x1;
-	dy=y2,Y1;
+	dx=x2-x1;
+	dy=y2-Y1;
 	if(dx<0) dx=-dx;
 	if(dy<0) dy=-dy;
 	incx=1;
